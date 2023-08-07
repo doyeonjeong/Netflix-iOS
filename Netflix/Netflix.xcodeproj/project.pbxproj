@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8F4C5E352A810E5900F10698 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8F4C5E342A810E5900F10698 /* Lottie */; };
+		8F4C5E372A810F0D00F10698 /* animation_netflix.json in Resources */ = {isa = PBXBuildFile; fileRef = 8F4C5E362A810F0D00F10698 /* animation_netflix.json */; };
 		8F50E7332A80A06800DA6DCD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F50E7322A80A06800DA6DCD /* AppDelegate.swift */; };
 		8F50E7352A80A06800DA6DCD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F50E7342A80A06800DA6DCD /* SceneDelegate.swift */; };
 		8F50E7372A80A06800DA6DCD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F50E7362A80A06800DA6DCD /* ViewController.swift */; };
@@ -15,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8F4C5E362A810F0D00F10698 /* animation_netflix.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = animation_netflix.json; sourceTree = "<group>"; };
 		8F50E72F2A80A06800DA6DCD /* Netflix.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Netflix.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F50E7322A80A06800DA6DCD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8F50E7342A80A06800DA6DCD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -29,6 +32,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8F4C5E352A810E5900F10698 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,6 +67,7 @@
 		8F50E7462A80A23600DA6DCD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				8F4C5E362A810F0D00F10698 /* animation_netflix.json */,
 				8F50E73B2A80A06A00DA6DCD /* Assets.xcassets */,
 				8F50E7402A80A06A00DA6DCD /* Info.plist */,
 				8F50E73D2A80A06A00DA6DCD /* LaunchScreen.storyboard */,
@@ -104,6 +109,9 @@
 			dependencies = (
 			);
 			name = Netflix;
+			packageProductDependencies = (
+				8F4C5E342A810E5900F10698 /* Lottie */,
+			);
 			productName = Netflix;
 			productReference = 8F50E72F2A80A06800DA6DCD /* Netflix.app */;
 			productType = "com.apple.product-type.application";
@@ -132,6 +140,9 @@
 				Base,
 			);
 			mainGroup = 8F50E7262A80A06800DA6DCD;
+			packageReferences = (
+				8F4C5E332A810E5900F10698 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+			);
 			productRefGroup = 8F50E7302A80A06800DA6DCD /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -147,6 +158,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8F50E73F2A80A06A00DA6DCD /* LaunchScreen.storyboard in Resources */,
+				8F4C5E372A810F0D00F10698 /* animation_netflix.json in Resources */,
 				8F50E73C2A80A06A00DA6DCD /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -374,6 +386,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8F4C5E332A810E5900F10698 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8F4C5E342A810E5900F10698 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8F4C5E332A810E5900F10698 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8F50E7272A80A06800DA6DCD /* Project object */;
 }
