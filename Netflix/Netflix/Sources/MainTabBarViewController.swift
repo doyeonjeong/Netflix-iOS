@@ -47,7 +47,10 @@ extension MainTabBarViewController {
         
         let viewControllers = [homeVC, searchVC, upcomingVC, downloadVC, moreVC]
         configureTabBar(viewControllers)
-        tabBar.tintColor = .label
+        tabBar.backgroundColor = .black
+        tabBar.barTintColor = .black
+        tabBar.tintColor = .white
+        tabBar.isTranslucent = false
         setViewControllers(viewControllers, animated: false)
     }
     

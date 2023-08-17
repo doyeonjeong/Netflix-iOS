@@ -11,8 +11,9 @@ class HeaderCell: UICollectionViewCell {
     
     lazy var imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = .gray
+        imageView.backgroundColor = .black
+        imageView.tintColor = .white
+        imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -20,21 +21,29 @@ class HeaderCell: UICollectionViewCell {
     
     lazy var addButton: UIButton = {
         let button = UIButton()
-        button.setTitle("추가", for: .normal)
+        button.setImage(UIImage(systemName: "plus"), for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
     lazy var playButton: UIButton = {
         let button = UIButton()
-        button.setTitle("재생", for: .normal)
+        button.setTitle("▶︎  재생", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.backgroundColor = .white
+        button.layer.cornerRadius = 3
+        button.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
     lazy var infoButton: UIButton = {
         let button = UIButton()
-        button.setTitle("정보", for: .normal)
+        button.setImage(UIImage(systemName: "info.circle"), for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(infoButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -48,13 +57,17 @@ class HeaderCell: UICollectionViewCell {
         return stackView
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setup()
-    }
+    lazy var backgroundStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [imageView, buttonStackView])
+        stackView.axis = .vertical
+        stackView.spacing = -40
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        setup()
     }
     
 }
@@ -68,27 +81,40 @@ extension HeaderCell {
     }
     
     private func addSubviews() {
-        contentView.addSubview(imageView)
-        contentView.addSubview(buttonStackView)
+        contentView.addSubview(backgroundStackView)
     }
     
     private func configureViews() {
         NSLayoutConstraint.activate([
-            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            imageView.bottomAnchor.constraint(equalTo: buttonStackView.topAnchor, constant: -8),
-            
-            buttonStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            buttonStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            buttonStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
+            backgroundStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            backgroundStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            backgroundStackView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            backgroundStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
         ])
     }
     
-    func configure(with movie: Movie) {
-        if let image = UIImage(named: movie.imageName) {
-            imageView.image = image
-        }
+}
+
+extension HeaderCell {
+    
+    func configure(_ item: Item) {
+        imageView.image = UIImage(systemName: item.imageName)
+    }
+    
+}
+
+extension HeaderCell {
+    
+    @objc private func addButtonTapped(_ sender: UIButton) {
+        print(#function)
+    }
+    
+    @objc private func playButtonTapped(_ sender: UIButton) {
+        print(#function)
+    }
+    
+    @objc private func infoButtonTapped(_ sender: UIButton) {
+        print(#function)
     }
     
 }
