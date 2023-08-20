@@ -51,6 +51,7 @@ extension MainTabBarViewController {
         tabBar.barTintColor = .black
         tabBar.tintColor = .white
         tabBar.isTranslucent = false
+        tabBar.isHidden = false
         setViewControllers(viewControllers, animated: false)
     }
     
