@@ -19,6 +19,16 @@ class MovieCell: UICollectionViewCell {
         return imageView
     }()
     
+    lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.backgroundColor = .black
+        label.textColor = .white
+        label.numberOfLines = 0
+        label.adjustsFontSizeToFitWidth = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         setup()
@@ -53,7 +63,11 @@ extension MovieCell {
 extension MovieCell {
     
     func configure(_ item: Item) {
-        imageView.image = UIImage(systemName: item.imageName)
+        imageView.image = UIImage(systemName: "photo")
+    }
+    
+    func configureLabel(_ item: DailyBoxOfficeList) {
+        titleLabel.text = item.movieNm
     }
     
 }

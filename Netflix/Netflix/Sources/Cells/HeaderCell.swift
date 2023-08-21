@@ -98,7 +98,7 @@ extension HeaderCell {
 extension HeaderCell {
     
     func configure(_ item: Item) {
-        imageView.image = UIImage(systemName: item.imageName)
+        imageView.image = UIImage(systemName: "photo")
     }
     
 }
