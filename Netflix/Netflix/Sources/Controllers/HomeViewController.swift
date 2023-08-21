@@ -7,10 +7,10 @@
 
 import UIKit
 
-typealias Item = Movie
+typealias Item = MovieItem
 typealias DataSource = UICollectionViewDiffableDataSource<Section, Item>
 
-enum Section: Int, CaseIterable {
+enum Section: Int, CaseIterable, Hashable {
     case header
     case daily
     case newKR
@@ -19,11 +19,12 @@ enum Section: Int, CaseIterable {
 
 class HomeViewController: UIViewController {
     
-    let mainItem = Movie.getMainItem()
-//    var mainItem = [Movie]()
-    let dailyItems = Movie.daily
-    let newKRItems = Movie.newKR
-    let newUSItems = Movie.newUS
+    var mainItem = [Item]()
+    var dailyItems = [Item]()
+    var newKRItems = [Item]()
+    var newUSItems = [Item]()
+    
+    let viewModel = MovieModel()
     
     private var dataSource: DataSource!
     
@@ -46,11 +47,24 @@ class HomeViewController: UIViewController {
 extension HomeViewController {
     
     private func setup() {
+        loadData()
         setBackgroundColor()
         configureDataSource()
         configureSnapshot()
         addSubviews()
         setConstraints()
+    }
+    
+    private func loadData() {
+        
+        for i in 0..<10 {
+            dailyItems.append(MovieItem(index: i, title: "", posterURL: "", section: .daily))
+            newKRItems.append(MovieItem(index: i, title: "", posterURL: "", section: .newKR))
+            newUSItems.append(MovieItem(index: i, title: "", posterURL: "", section: .newUS))
+        }
+        getMainItem()
+        
+        viewModel.getData()
     }
     
     private func setBackgroundColor() {
@@ -103,7 +117,16 @@ extension HomeViewController {
         let supplementaryRegistration = UICollectionView.SupplementaryRegistration
         <SectionHeaderView>(elementKind: UICollectionView.elementKindSectionHeader) {
             (supplementaryView, string, indexPath) in
-            supplementaryView.configure(Movie(title: "1", imageName: "2", category: "category"))
+            switch indexPath.section {
+            case 1:
+                supplementaryView.sectionTitleLabel.text = "일별 박스오피스"
+            case 2:
+                supplementaryView.sectionTitleLabel.text = "한국 최신영화"
+            case 3:
+                supplementaryView.sectionTitleLabel.text = "미국 최신영화"
+            default:
+                supplementaryView.sectionTitleLabel.text = ""
+            }
         }
         
         dataSource.supplementaryViewProvider = { (view, kind, index) in
@@ -117,11 +140,6 @@ extension HomeViewController {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
         snapshot.appendSections(Section.allCases)
         
-//        if let item = getMainItem([]) {
-//            mainItem.append(item)
-//            snapshot.appendItems(mainItem, toSection: .header)
-//        }
-//        mainItem.append(item)
         snapshot.appendItems(mainItem, toSection: .header)
         snapshot.appendItems(dailyItems, toSection: .daily)
         snapshot.appendItems(newKRItems, toSection: .newKR)
@@ -155,7 +173,7 @@ extension HomeViewController {
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 10
         section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
-
+        
         return section
     }
     
@@ -193,19 +211,12 @@ extension HomeViewController {
         return sectionHeader
     }
     
-    private func getMainItem(_ items: [Movie]) -> Movie? {
-        // guard let 문법을 쓰는 이유: 옵셔널 바인딩
-        guard var item = items.randomElement() else {
-            return nil
+    private func getMainItem() {
+        guard var dailyItem = dailyItems.randomElement() else {
+            return
         }
-        item.category = "recommendation"
-        return item
+        dailyItem.section = .header
+        mainItem.append(dailyItem)
     }
-    
-//    private func getMainItem(_ items: [Movie]) -> Movie? {
-//        var item = items.randomElement()!
-//        item.category = "recommendation"
-//        return item
-//    }
     
 }
