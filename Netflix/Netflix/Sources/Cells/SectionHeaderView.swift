@@ -46,11 +46,3 @@ extension SectionHeaderView {
     }
     
 }
-
-extension SectionHeaderView {
-    
-    func configure(_ item: Item) {
-        sectionTitleLabel.text = item.category
-    }
-    
-}
