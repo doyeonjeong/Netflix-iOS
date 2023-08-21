@@ -2,81 +2,113 @@
 //  Movie.swift
 //  Netflix
 //
-//  Created by DOYEON JEONG on 2023/08/12.
+//  Created by DOYEON JEONG on 2023/08/20.
 //
 
 import Foundation
 
+struct MovieItem: Hashable {
+    var index: Int // 0...9
+    var title: String
+    var posterURL: String
+    var section: Section
+    
+    init(index: Int, title: String, posterURL: String, section: Section) {
+        self.index = index
+        self.title = title
+        self.posterURL = posterURL
+        self.section = section
+    }
+}
+
 struct Movie: Hashable {
-    let title: String
-    let imageName: String
-    var category: String
-}
-
-extension Movie {
-
-    static let daily = [
-        Movie(title: "영화제목1", imageName: "photo", category: "category1"),
-        Movie(title: "영화제목2", imageName: "photo", category: "category1"),
-        Movie(title: "영화제목3", imageName: "photo", category: "category1"),
-        Movie(title: "영화제목4", imageName: "photo", category: "category1"),
-        Movie(title: "영화제목5", imageName: "photo", category: "category1"),
-        Movie(title: "영화제목6", imageName: "photo", category: "category1"),
-        Movie(title: "영화제목7", imageName: "photo", category: "category1"),
-        Movie(title: "영화제목8", imageName: "photo", category: "category1"),
-        Movie(title: "영화제목9", imageName: "photo", category: "category1"),
-        Movie(title: "영화제목10", imageName: "photo", category: "category1"),
-        Movie(title: "영화제목11", imageName: "photo", category: "category1")
-    ]
     
-    static let newKR = [
-        Movie(title: "영화제목1", imageName: "photo", category: "category2"),
-        Movie(title: "영화제목2", imageName: "photo", category: "category2"),
-        Movie(title: "영화제목3", imageName: "photo", category: "category2"),
-        Movie(title: "영화제목4", imageName: "photo", category: "category2"),
-        Movie(title: "영화제목5", imageName: "photo", category: "category2"),
-        Movie(title: "영화제목6", imageName: "photo", category: "category2"),
-        Movie(title: "영화제목7", imageName: "photo", category: "category2"),
-        Movie(title: "영화제목8", imageName: "photo", category: "category2"),
-        Movie(title: "영화제목9", imageName: "photo", category: "category2"),
-        Movie(title: "영화제목10", imageName: "photo", category: "category2"),
-        Movie(title: "영화제목11", imageName: "photo", category: "category2")
-    ]
+    var identifier = UUID()
+    var headerItem: MovieItem
+    var dailyList: [MovieItem]
+    var newKoreaMovieList: [MovieItem]
+    var newUSAMovieListResult: [MovieItem]
     
-    static let newUS = [
-        Movie(title: "영화제목1", imageName: "photo", category: "category3"),
-        Movie(title: "영화제목2", imageName: "photo", category: "category3"),
-        Movie(title: "영화제목3", imageName: "photo", category: "category3"),
-        Movie(title: "영화제목4", imageName: "photo", category: "category3"),
-        Movie(title: "영화제목5", imageName: "photo", category: "category3"),
-        Movie(title: "영화제목6", imageName: "photo", category: "category3"),
-        Movie(title: "영화제목7", imageName: "photo", category: "category3"),
-        Movie(title: "영화제목8", imageName: "photo", category: "category3"),
-        Movie(title: "영화제목9", imageName: "photo", category: "category3"),
-        Movie(title: "영화제목10", imageName: "photo", category: "category3"),
-        Movie(title: "영화제목11", imageName: "photo", category: "category3")
-    ]
-    
-}
-
-extension Movie {
-    
-    static func getMainItem() -> [Movie] {
-        var item = daily.randomElement()!//guard let 으로 보내거나
-        item.category = "recommendation"
-        return [item]
+    static func == (lhs: Movie, rhs: Movie) -> Bool {
+        return lhs.identifier == rhs.identifier
     }
     
-//    static func getMainItem() -> Movie {
-//        var item = daily.randomElement()!//guard let 으로 보내거나
-//        item.category = "recommendation"
-//        return item
-//    }
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
+        hasher.combine(headerItem)
+        hasher.combine(dailyList)
+        hasher.combine(newKoreaMovieList)
+        hasher.combine(newUSAMovieListResult)
+    }
+}
+
+struct MovieInformations: Codable {
+    var boxOfficeResult: BoxOfficeResult?
+    var newKoreaMovieResult: KmdbForNewKoreaMovieResult?
+    var newUSAMovieResult: NewUSAMovieResult?
+}
+
+// MARK: - BoxOfficeResult
+struct BoxOfficeResult: Codable {
+    let dailyBoxOfficeList: [DailyBoxOfficeList]
+}
+
+// MARK: - DailyBoxOfficeList
+struct DailyBoxOfficeList: Codable {
+    let rank: String
+    let movieNm: String
     
-//    static func getMainItem(_ items: [Movie]) -> Movie {
-//        var item = daily.randomElement()!//guard let 으로 보내거나
-//        item.category = "recommendation"
-//        return item
-//    }
-    
+    enum CodingKeys: String, CodingKey {
+        case rank
+        case movieNm
+    }
+}
+
+// MARK: - NewKoreaMovieResult
+struct NewKoreaMovieResult: Codable {
+    let movieList: [MovieList]
+}
+
+// MARK: - BoxOfficeResult
+struct NewUSAMovieResult: Codable {
+    let movieList: [MovieList]
+}
+
+struct MovieList: Codable {
+    let movieNm: String
+
+    enum CodingKeys: String, CodingKey {
+        case movieNm
+    }
+}
+
+// MARK: - KmdbForNewKoreaMovieResult
+struct KmdbForNewKoreaMovieResult: Codable {
+    let totalCount: Int
+    let data: [Datum]
+
+    enum CodingKeys: String, CodingKey {
+        case totalCount = "TotalCount"
+        case data = "Data"
+    }
+}
+
+// MARK: - Datum
+struct Datum: Codable {
+    let result: [Result]
+
+    enum CodingKeys: String, CodingKey {
+        case result = "Result"
+    }
+}
+
+// MARK: - Result
+struct Result: Codable {
+    let title: String
+    let posters: String
+
+    enum CodingKeys: String, CodingKey {
+        case title
+        case posters
+    }
 }
