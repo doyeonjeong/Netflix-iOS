@@ -79,4 +79,24 @@ class APICaller {
         }
         task.resume()
     }
+    
+    // 영화 상세정보
+    func getDetailAMovieInfomations(id: Int ,completion: @escaping (Result<MovieDetailResponse, Error>) -> Void) {
+        guard let url = URL(string: "\(Constants.baseURL)/3/movie/\(id)?api_key=\(Constants.API_KEY)&language=ko-KR") else { return }
+        let task = session.dataTask(with: URLRequest(url: url)) { data, _, error in
+            guard let data = data, error == nil else {
+                return
+            }
+            
+            do {
+                let results = try JSONDecoder().decode(MovieDetailResponse.self, from: data)
+                print(results)
+                completion(.success(results))
+                
+            } catch {
+                completion(.failure(APIError.failedToGetData))
+            }
+        }
+        task.resume()
+    }
 }
