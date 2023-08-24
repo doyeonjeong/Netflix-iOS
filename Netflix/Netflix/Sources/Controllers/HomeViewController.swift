@@ -21,6 +21,7 @@ class HomeViewController: UIViewController {
     
     let sectionTitles = ["", "일별 박스오피스", "한국 최신영화", "미국 최신영화"]
     
+    var animator: Animator?
     var mainItem = [Movie]()
     var dailyMovies = [Movie]()
     var newKRMovies = [Movie]()
@@ -28,7 +29,8 @@ class HomeViewController: UIViewController {
     
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
     
-    var selectedMovieId = 976573 // 엘리멘탈 -> Int? 형으로 바꾸고 사용자가 셀을 선택했을 때 변경되도록 해야함
+    var selectedCell: MovieCell?
+    var selectedCellImageViewSnapshot: UIView? // 뷰의 현재 렌더링된 모양을 가진 뷰
     
     private var dataSource: DataSource!
     
@@ -56,10 +58,16 @@ extension HomeViewController {
         configureSnapshot()
         addSubviews()
         setConstraints()
+        setDelegate()
+    }
+    
+    private func setDelegate() {
+        collectionView.delegate = self
     }
     
     private func setBackgroundColor() {
         view.backgroundColor = .black
+        navigationController?.navigationBar.isHidden = true
     }
     
     private func addSubviews() {
@@ -136,7 +144,6 @@ extension HomeViewController {
     
     private func configureSnapshot() {
         snapshot.appendSections(Section.allCases)
-//        getMainItem()
         fetchDailyMovies()
         fetchNewKRMovies()
         fetchNewUSMovies()
@@ -146,6 +153,7 @@ extension HomeViewController {
 
 // MARK: - Setup Layout
 extension HomeViewController {
+    
     private func layout() -> UICollectionViewLayout {
         return UICollectionViewCompositionalLayout { [weak self] sectionNumber, environment -> NSCollectionLayoutSection? in
             
@@ -271,6 +279,74 @@ extension HomeViewController {
                 print(error.localizedDescription)
             }
         }
+    }
+    
+}
+
+extension HomeViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        selectedCell = collectionView.cellForItem(at: indexPath) as? MovieCell
+        selectedCellImageViewSnapshot = selectedCell?.imageView.snapshotView(afterScreenUpdates: false)
+        
+        let section = indexPath.section
+        let index = indexPath.item
+        var selectedMovie: Movie
+        
+        switch section {
+        case 1:
+            selectedMovie = dailyMovies[index]
+        case 2:
+            selectedMovie = newKRMovies[index]
+        case 3:
+            selectedMovie = newUSMovies[index]
+        default:
+            selectedMovie = mainItem[0]
+        }
+        
+        presentDetailViewController(with: selectedMovie)
+    }
+    
+}
+
+extension HomeViewController: UIViewControllerTransitioningDelegate {
+    
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        guard let fromViewController = presenting as? HomeViewController,
+              let toViewController = presented as? MovieDetailViewController,
+              let selectedCellImageViewSnapshot = selectedCellImageViewSnapshot
+        else { return nil }
+        
+        animator = Animator(
+            type: .present,
+            firstViewController: fromViewController,
+            secondViewController: toViewController,
+            selectedCellImageViewSnapshot: selectedCellImageViewSnapshot
+        )
+        return animator
+    }
+    
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        guard let toViewController = dismissed as? MovieDetailViewController,
+              let selectedCellImageViewSnapshot = selectedCellImageViewSnapshot
+        else { return nil }
+        
+        animator = Animator(
+            type: .dismiss,
+            firstViewController: self,
+            secondViewController: toViewController,
+            selectedCellImageViewSnapshot: selectedCellImageViewSnapshot
+        )
+        return animator
+    }
+    
+    func presentDetailViewController(with item: Movie) {
+        let toViewController = MovieDetailViewController()
+        toViewController.transitioningDelegate = self
+        toViewController.modalPresentationStyle = .pageSheet
+        toViewController.movieId = item.id
+        present(toViewController, animated: true)
     }
     
 }

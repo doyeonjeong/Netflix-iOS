@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8F009E392A97286600423A6F /* MovieDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F009E382A97286600423A6F /* MovieDetailViewController.swift */; };
+		8F009E3D2A973A5800423A6F /* Animator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F009E3C2A973A5800423A6F /* Animator.swift */; };
 		8F492BFF2A9239870075992D /* Movie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F492BFE2A9239870075992D /* Movie.swift */; };
 		8F4C5E352A810E5900F10698 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8F4C5E342A810E5900F10698 /* Lottie */; };
 		8F4C5E372A810F0D00F10698 /* animation_netflix.json in Resources */ = {isa = PBXBuildFile; fileRef = 8F4C5E362A810F0D00F10698 /* animation_netflix.json */; };
@@ -29,6 +31,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8F009E382A97286600423A6F /* MovieDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailViewController.swift; sourceTree = "<group>"; };
+		8F009E3C2A973A5800423A6F /* Animator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Animator.swift; sourceTree = "<group>"; };
 		8F492BFE2A9239870075992D /* Movie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Movie.swift; sourceTree = "<group>"; };
 		8F4C5E362A810F0D00F10698 /* animation_netflix.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = animation_netflix.json; sourceTree = "<group>"; };
 		8F50E72F2A80A06800DA6DCD /* Netflix.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Netflix.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -131,6 +135,7 @@
 				8FB25C142A850BD10059921B /* DownloadViewController.swift */,
 				8FB25C162A850BE00059921B /* UpcomingViewController.swift */,
 				8FB25C192A850CB10059921B /* MoreViewController.swift */,
+				8F009E382A97286600423A6F /* MovieDetailViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -148,6 +153,7 @@
 			children = (
 				8FB25C202A853DCA0059921B /* CacheManager.swift */,
 				8FE9476C2A93CCF20046CE3B /* APICaller.swift */,
+				8F009E3C2A973A5800423A6F /* Animator.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -260,12 +266,14 @@
 				8FB25C262A85DC360059921B /* HeaderCell.swift in Sources */,
 				8FB25C212A853DCA0059921B /* CacheManager.swift in Sources */,
 				8F492BFF2A9239870075992D /* Movie.swift in Sources */,
+				8F009E3D2A973A5800423A6F /* Animator.swift in Sources */,
 				8FB25C132A850BC60059921B /* SearchViewController.swift in Sources */,
 				8FB25C102A850B0A0059921B /* MainTabBarViewController.swift in Sources */,
 				8FB25C152A850BD10059921B /* DownloadViewController.swift in Sources */,
 				8F50E7372A80A06800DA6DCD /* HomeViewController.swift in Sources */,
 				8F50E7332A80A06800DA6DCD /* AppDelegate.swift in Sources */,
 				8FB8E8762A8361BB00DB0D79 /* MovieCell.swift in Sources */,
+				8F009E392A97286600423A6F /* MovieDetailViewController.swift in Sources */,
 				8FE9476D2A93CCF20046CE3B /* APICaller.swift in Sources */,
 				8F50E7352A80A06800DA6DCD /* SceneDelegate.swift in Sources */,
 				8FEF2A362A8CA06B00BB8C22 /* SectionHeaderView.swift in Sources */,
