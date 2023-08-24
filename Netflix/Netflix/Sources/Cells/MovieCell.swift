@@ -13,7 +13,7 @@ class MovieCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.backgroundColor = .black
         imageView.tintColor = .white
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -63,8 +63,15 @@ extension MovieCell {
 extension MovieCell {
     
     func configure(with model: Movie) async {
+        
         let baseURL = "https://image.tmdb.org/t/p/w400"
-        guard let posterPath = model.posterPath else { return }
+        
+        guard let posterPath = model.posterPath else {
+            self.imageView.image = UIImage(systemName: "photo")
+            self.imageView.contentMode = .scaleAspectFit
+            return
+        }
+        
         let stringURL = baseURL + posterPath
         
         if let cacheImage = CacheManager.shared.object(forKey: stringURL as NSString) {
@@ -84,6 +91,10 @@ extension MovieCell {
                 self.imageView.image = image
             }
         }
+    }
+    
+    private func getUIImage(_ path: String?) -> UIImage {
+        return UIImage()
     }
     
 }
