@@ -31,6 +31,7 @@ struct MovieDetailResponse: Codable {
     let title: String?
     let overview: String?
     let posterPath: String?
+    let backdropPath: String?
     let releaseDate: String?
     let runtime: Int
     let genres: [Genre]
@@ -42,8 +43,22 @@ struct MovieDetailResponse: Codable {
         case title, overview, status
         case genres
         case posterPath = "poster_path"
+        case backdropPath = "backdrop_path"
         case releaseDate = "release_date"
         case voteAverage = "vote_average"
+    }
+    
+    init(id: Int = 1, title: String? = "", overview: String? = "", posterPath: String? = "", backdropPath: String? = "", releaseDate: String? = "", runtime: Int = 0, genres: [Genre] = [], status: String? = "", voteAverage: Double = 0) {
+        self.id = id
+        self.title = title
+        self.overview = overview
+        self.posterPath = posterPath
+        self.backdropPath = backdropPath
+        self.releaseDate = releaseDate
+        self.runtime = runtime
+        self.genres = genres
+        self.status = status
+        self.voteAverage = voteAverage
     }
 }
 
