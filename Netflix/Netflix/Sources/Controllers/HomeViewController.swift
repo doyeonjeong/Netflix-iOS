@@ -7,24 +7,28 @@
 
 import UIKit
 
-typealias Item = MovieItem
+typealias Item = Movie
 typealias DataSource = UICollectionViewDiffableDataSource<Section, Item>
 
 enum Section: Int, CaseIterable, Hashable {
-    case header
-    case daily
-    case newKR
-    case newUS
+    case header = 0
+    case daily = 1
+    case newKR = 2
+    case newUS = 3
 }
 
 class HomeViewController: UIViewController {
     
-    var mainItem = [Item]()
-    var dailyItems = [Item]()
-    var newKRItems = [Item]()
-    var newUSItems = [Item]()
+    let sectionTitles = ["", "일별 박스오피스", "한국 최신영화", "미국 최신영화"]
     
-    let viewModel = MovieModel()
+    var mainItem = [Movie]()
+    var dailyMovies = [Movie]()
+    var newKRMovies = [Movie]()
+    var newUSMovies = [Movie]()
+    
+    var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+    
+    var selectedMovieId = 976573 // 엘리멘탈 -> Int? 형으로 바꾸고 사용자가 셀을 선택했을 때 변경되도록 해야함
     
     private var dataSource: DataSource!
     
@@ -47,24 +51,11 @@ class HomeViewController: UIViewController {
 extension HomeViewController {
     
     private func setup() {
-        loadData()
         setBackgroundColor()
         configureDataSource()
         configureSnapshot()
         addSubviews()
         setConstraints()
-    }
-    
-    private func loadData() {
-        
-        for i in 0..<10 {
-            dailyItems.append(MovieItem(index: i, title: "", posterURL: "", section: .daily))
-            newKRItems.append(MovieItem(index: i, title: "", posterURL: "", section: .newKR))
-            newUSItems.append(MovieItem(index: i, title: "", posterURL: "", section: .newUS))
-        }
-        getMainItem()
-        
-        viewModel.getData()
     }
     
     private func setBackgroundColor() {
@@ -88,6 +79,7 @@ extension HomeViewController {
     
 }
 
+// MARK: - Setup data
 extension HomeViewController {
     
     private func configureDataSource() {
@@ -105,28 +97,34 @@ extension HomeViewController {
                     cell.configure(item)
                     return cell
                     
-                case .daily, .newKR, .newUS:
+                case .daily:
                     guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: MovieCell.self), for: indexPath) as? MovieCell else { return UICollectionViewCell() }
-                    cell.configure(item)
+                    Task {
+                        await cell.configure(with: item)
+                    }
+                    return cell
+                    
+                case .newKR:
+                    guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: MovieCell.self), for: indexPath) as? MovieCell else { return UICollectionViewCell() }
+                    Task {
+                        await cell.configure(with: item)
+                    }
+                    return cell
+                    
+                case .newUS:
+                    guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: MovieCell.self), for: indexPath) as? MovieCell else { return UICollectionViewCell() }
+                    Task {
+                        await cell.configure(with: item)
+                    }
                     return cell
                 }
-                
             }
         )
         
         let supplementaryRegistration = UICollectionView.SupplementaryRegistration
         <SectionHeaderView>(elementKind: UICollectionView.elementKindSectionHeader) {
             (supplementaryView, string, indexPath) in
-            switch indexPath.section {
-            case 1:
-                supplementaryView.sectionTitleLabel.text = "일별 박스오피스"
-            case 2:
-                supplementaryView.sectionTitleLabel.text = "한국 최신영화"
-            case 3:
-                supplementaryView.sectionTitleLabel.text = "미국 최신영화"
-            default:
-                supplementaryView.sectionTitleLabel.text = ""
-            }
+            supplementaryView.sectionTitleLabel.text = self.sectionTitles[indexPath.section]
         }
         
         dataSource.supplementaryViewProvider = { (view, kind, index) in
@@ -137,16 +135,17 @@ extension HomeViewController {
     }
     
     private func configureSnapshot() {
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
         snapshot.appendSections(Section.allCases)
-        
-        snapshot.appendItems(mainItem, toSection: .header)
-        snapshot.appendItems(dailyItems, toSection: .daily)
-        snapshot.appendItems(newKRItems, toSection: .newKR)
-        snapshot.appendItems(newUSItems, toSection: .newUS)
-        dataSource.apply(snapshot)
+//        getMainItem()
+        fetchDailyMovies()
+        fetchNewKRMovies()
+        fetchNewUSMovies()
     }
     
+}
+
+// MARK: - Setup Layout
+extension HomeViewController {
     private func layout() -> UICollectionViewLayout {
         return UICollectionViewCompositionalLayout { [weak self] sectionNumber, environment -> NSCollectionLayoutSection? in
             
@@ -167,7 +166,7 @@ extension HomeViewController {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(0.58))
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(0.68))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, repeatingSubitem: item, count: 1)
         
         let section = NSCollectionLayoutSection(group: group)
@@ -207,16 +206,71 @@ extension HomeViewController {
             layoutSize: sectionHeaderSize,
             elementKind: UICollectionView.elementKindSectionHeader,
             alignment: .top)
-        
+
         return sectionHeader
     }
     
-    private func getMainItem() {
-        guard var dailyItem = dailyItems.randomElement() else {
+}
+
+// MARK: - APICall & FetchData
+extension HomeViewController {
+    
+    private func appendDailySnapshot(_ movies: [Movie]) {
+        
+        guard var dailyItem = movies.randomElement() else {
             return
         }
-        dailyItem.section = .header
-        mainItem.append(dailyItem)
+        dailyItem.isMainItem = true
+        mainItem = [dailyItem]
+        snapshot.appendItems(mainItem, toSection: .header)
+        snapshot.appendItems(movies, toSection: .daily)
+        dataSource.apply(snapshot)
+    }
+    
+    private func appendNewKRSnapshot(_ movies: [Movie]) {
+        snapshot.appendItems(movies, toSection: .newKR)
+        dataSource.apply(snapshot)
+    }
+    
+    private func appendNewUSSnapshot(_ movies: [Movie]) {
+        snapshot.appendItems(movies, toSection: .newUS)
+        dataSource.apply(snapshot)
+    }
+    
+    private func fetchDailyMovies() {
+        APICaller.shared.getDailyBoxOfficeMovies { [weak self] results in
+            switch results {
+            case .success(let movies):
+                self?.dailyMovies = movies
+                self?.appendDailySnapshot(movies)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func fetchNewKRMovies() {
+        APICaller.shared.getNewKoreaMovies { [weak self] results in
+            switch results {
+            case .success(let movies):
+                self?.newKRMovies = movies
+                self?.appendNewKRSnapshot(movies)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func fetchNewUSMovies() {
+        APICaller.shared.getNewUSAMovies { [weak self] results in
+            switch results {
+            case .success(let movies):
+                self?.newUSMovies = movies
+                self?.appendNewUSSnapshot(movies)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
     
 }

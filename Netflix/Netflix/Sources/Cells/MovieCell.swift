@@ -62,12 +62,28 @@ extension MovieCell {
 // MARK: - Action
 extension MovieCell {
     
-    func configure(_ item: Item) {
-        imageView.image = UIImage(systemName: "photo")
-    }
-    
-    func configureLabel(_ item: DailyBoxOfficeList) {
-        titleLabel.text = item.movieNm
+    func configure(with model: Movie) async {
+        let baseURL = "https://image.tmdb.org/t/p/w400"
+        guard let posterPath = model.posterPath else { return }
+        let stringURL = baseURL + posterPath
+        
+        if let cacheImage = CacheManager.shared.object(forKey: stringURL as NSString) {
+            self.imageView.image = cacheImage
+            return
+        }
+        
+        DispatchQueue.global().async {
+            guard
+                let url = URL(string: stringURL),
+                let data = try? Data(contentsOf: url),
+                let image = UIImage(data: data)
+            else { return }
+
+            DispatchQueue.main.async {
+                CacheManager.shared.setObject(image, forKey: stringURL as NSString)
+                self.imageView.image = image
+            }
+        }
     }
     
 }

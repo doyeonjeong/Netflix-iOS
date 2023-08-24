@@ -13,7 +13,7 @@ class HeaderCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.backgroundColor = .black
         imageView.tintColor = .white
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -60,7 +60,6 @@ class HeaderCell: UICollectionViewCell {
     lazy var backgroundStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [imageView, buttonStackView])
         stackView.axis = .vertical
-        stackView.spacing = -40
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
@@ -91,14 +90,38 @@ extension HeaderCell {
             backgroundStackView.topAnchor.constraint(equalTo: contentView.topAnchor),
             backgroundStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
         ])
+        
+        NSLayoutConstraint.activate([
+            buttonStackView.heightAnchor.constraint(equalToConstant: 40)
+        ])
     }
     
 }
 
 extension HeaderCell {
     
-    func configure(_ item: Item) {
-        imageView.image = UIImage(systemName: "photo")
+    func configure(_ model: Movie) {
+        let baseURL = "https://image.tmdb.org/t/p/w400"
+        guard let posterPath = model.posterPath else { return }
+        let stringURL = baseURL + posterPath
+        
+        if let cacheImage = CacheManager.shared.object(forKey: stringURL as NSString) {
+            self.imageView.image = cacheImage
+            return
+        }
+        
+        DispatchQueue.global().async {
+            guard
+                let url = URL(string: stringURL),
+                let data = try? Data(contentsOf: url),
+                let image = UIImage(data: data)
+            else { return }
+
+            DispatchQueue.main.async {
+                CacheManager.shared.setObject(image, forKey: stringURL as NSString)
+                self.imageView.image = image
+            }
+        }
     }
     
 }
