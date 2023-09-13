@@ -46,10 +46,10 @@ extension HomeViewController {
     
     private func setup() {
         setBackgroundColor()
-        configureDataSource()
-        configureSnapshot()
         addSubviews()
         setConstraints()
+        configureDataSource()
+        configureSnapshot()
     }
     
     private func setBackgroundColor() {
