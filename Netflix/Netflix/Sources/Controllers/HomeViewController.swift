@@ -20,7 +20,6 @@ enum Section: Int, CaseIterable {
 class HomeViewController: UIViewController {
     
     let mainItem = Movie.getMainItem()
-//    var mainItem = [Movie]()
     let dailyItems = Movie.daily
     let newKRItems = Movie.newKR
     let newUSItems = Movie.newUS
@@ -116,12 +115,6 @@ extension HomeViewController {
     private func configureSnapshot() {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
         snapshot.appendSections(Section.allCases)
-        
-//        if let item = getMainItem([]) {
-//            mainItem.append(item)
-//            snapshot.appendItems(mainItem, toSection: .header)
-//        }
-//        mainItem.append(item)
         snapshot.appendItems(mainItem, toSection: .header)
         snapshot.appendItems(dailyItems, toSection: .daily)
         snapshot.appendItems(newKRItems, toSection: .newKR)
@@ -194,18 +187,11 @@ extension HomeViewController {
     }
     
     private func getMainItem(_ items: [Movie]) -> Movie? {
-        // guard let 문법을 쓰는 이유: 옵셔널 바인딩
         guard var item = items.randomElement() else {
             return nil
         }
         item.category = "recommendation"
         return item
     }
-    
-//    private func getMainItem(_ items: [Movie]) -> Movie? {
-//        var item = items.randomElement()!
-//        item.category = "recommendation"
-//        return item
-//    }
-    
+
 }
