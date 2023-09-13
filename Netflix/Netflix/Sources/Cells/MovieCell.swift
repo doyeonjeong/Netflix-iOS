@@ -64,26 +64,15 @@ extension MovieCell {
     
     func configure(with model: Movie) async {
         let baseURL = "https://image.tmdb.org/t/p/w400"
-        guard let posterPath = model.posterPath else { return }
-        let stringURL = baseURL + posterPath
         
-        if let cacheImage = CacheManager.shared.object(forKey: stringURL as NSString) {
-            self.imageView.image = cacheImage
+        guard let posterPath = model.posterPath else {
+            self.imageView.image = UIImage(systemName: "photo")
+            self.imageView.contentMode = .scaleAspectFit
             return
         }
         
-        DispatchQueue.global().async {
-            guard
-                let url = URL(string: stringURL),
-                let data = try? Data(contentsOf: url),
-                let image = UIImage(data: data)
-            else { return }
-
-            DispatchQueue.main.async {
-                CacheManager.shared.setObject(image, forKey: stringURL as NSString)
-                self.imageView.image = image
-            }
-        }
+        let stringURL = baseURL + posterPath
+        self.imageView.setImageURL(stringURL)
     }
-    
+
 }
